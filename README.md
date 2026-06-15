@@ -1,4 +1,4 @@
-# Coletor-SUAP 📑
+# Coletor-SUAP
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.3-lightgrey.svg)](https://flask.palletsprojects.com/)
@@ -6,7 +6,7 @@
 
 O **Coletor-SUAP** é uma ferramenta de automação robusta desenvolvida para facilitar a extração e consolidação de dados de produção de pesquisa do IFBA (Instituto Federal da Bahia).
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - **Fluxo em Etapas**: Interface intuitiva dividida em Login, Configuração e Monitoramento.
 - **Automação Inteligente**: Login e navegação automática no sistema SUAP via Playwright.
@@ -16,12 +16,12 @@ O **Coletor-SUAP** é uma ferramenta de automação robusta desenvolvida para fa
 - **Interface Premium**: Design elegante em preto e branco com tipografia Garamond e suporte a atalhos de período.
 - **Monitoramento Real-time**: Acompanhamento detalhado do status da automação e tempo decorrido.
 
-## 🛠️ Pré-requisitos
+## Pré-requisitos
 
 - Python 3.8 ou superior.
 - Navegador Chromium (instalado automaticamente via Playwright).
 
-## 🚀 Instalação e Configuração
+## Instalação e Configuração
 
 ### 1. Clonar o Repositório
 ```bash
@@ -36,7 +36,7 @@ chmod +x scripts/start.sh
 ./scripts/start.sh
 ```
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 O projeto utiliza uma arquitetura organizada e modular:
 
@@ -52,7 +52,7 @@ O projeto utiliza uma arquitetura organizada e modular:
   - `processed/`: Planilhas acumuladas e limpas (Master Files).
 - `logs/`: Histórico técnico de execuções.
 
-## 📖 Como Usar
+## Como Usar
 
 1. Inicie o sistema através do `./start.sh`.
 2. Acesse `http://localhost:5000`.
@@ -62,10 +62,10 @@ O projeto utiliza uma arquitetura organizada e modular:
    - Use os botões de atalho (ex: "Últimos 3 Anos") ou defina o intervalo manualmente.
 5. **Passo 3 (Progresso)**: Acompanhe a coleta. Os arquivos finais estarão em `data/processed/`.
 
-## ⚠️ Isenção de Responsabilidade
+## Isenção de Responsabilidade
 
 Esta ferramenta foi desenvolvida para fins de produtividade institucional. O uso deve respeitar as políticas de segurança do sistema SUAP e do IFBA. O desenvolvedor não se responsabiliza pelo uso indevido da ferramenta.
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT.
