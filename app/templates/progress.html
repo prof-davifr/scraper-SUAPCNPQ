@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing... SUAP Scraper</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --bg-color: #ffffff;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --border-color: #000000;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+            animation: fade-in 0.8s ease-out;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            text-align: left;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .indicator-pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 1px solid black;
+            border-radius: 50%;
+            background-color: white;
+            margin-right: 10px;
+            animation: breathe 2s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0% { background-color: white; transform: scale(1); }
+            50% { background-color: black; transform: scale(1.1); }
+            100% { background-color: white; transform: scale(1); }
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-box {
+            border-left: 1px solid #eee;
+            padding-left: 1.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .log-container {
+            border: 1px solid #eee;
+            padding: 1.5rem;
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 2rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #fafafa;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .back-btn {
+            display: none;
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            font-family: 'EB Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 2rem;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Progresso da Coleta</h1>
+                <div class="status-badge" id="app-status">
+                    <span class="indicator-pulse" id="pulse-dot"></span><span id="status-text">Conectando...</span>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Tarefa Atual</div>
+                    <div class="stat-value" id="current-campus">Inicializando</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Downloads Concluídos</div>
+                    <div class="stat-value" id="files-downloaded">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Tempo Decorrido</div>
+                    <div class="stat-value" id="time-elapsed">00:00</div>
+                </div>
+            </div>
+
+            <div class="log-container" id="current-action">
+                Iniciando...
+            </div>
+
+            <a href="/setup" class="back-btn" id="back-button">Voltar à Configuração</a>
+
+            <p class="footer-note">Este processo é executado em segundo plano. A geração de um relatório pode levar até 120 minutos por campus. Não feche o servidor.</p>
+        </div>
+    </div>
+
+    <script>
+        const statusText = document.getElementById('status-text');
+        const currentCampus = document.getElementById('current-campus');
+        const filesDownloaded = document.getElementById('files-downloaded');
+        const currentAction = document.getElementById('current-action');
+        const pulseDot = document.getElementById('pulse-dot');
+        const appStatus = document.getElementById('app-status');
+        const timeElapsed = document.getElementById('time-elapsed');
+        const backButton = document.getElementById('back-button');
+        
+        let serverStartTime = 0;
+        let localStartTime = 0;
+        let timerInterval = null;
+
+        function formatTime(seconds) {
+            if (!seconds || seconds < 0) return "00:00";
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+        
+        function updateTimer() {
+            if (serverStartTime > 0) {
+                const now = Date.now() / 1000;
+                const elapsed = now - localStartTime;
+                timeElapsed.textContent = formatTime(elapsed);
+            }
+        }
+
+        function updateProgress() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    const isRunning = data.is_running;
+                    
+                    if (!isRunning && data.status !== "Inativo" && data.status !== "Inicializando" && data.status !== "Idle" && data.status !== "Initializing") {
+                        statusText.textContent = "Concluído";
+                        pulseDot.style.display = 'none';
+                        currentAction.textContent = data.error ? 'Concluído com erro' : 'Todas as tarefas foram concluídas com sucesso.';
+                        backButton.style.display = 'block';
+                    } else if (isRunning) {
+                        statusText.textContent = "Executando";
+                        pulseDot.style.display = 'inline-block';
+                        backButton.style.display = 'none';
+                    }
+
+                    currentCampus.textContent = data.current_campus ? "Campus " + data.current_campus : (isRunning ? "Conectando SUAP..." : "Inativo");
+                    filesDownloaded.textContent = data.files_downloaded || 0;
+                    currentAction.textContent = data.status || "Inativo";
+                    
+                    if (data.status_start_time && data.status_start_time !== serverStartTime) {
+                        serverStartTime = data.status_start_time;
+                        localStartTime = Date.now() / 1000;
+                    }
+                    
+                    if (!isRunning) {
+                        serverStartTime = 0;
+                    }
+                    
+                    if (data.error) {
+                         currentAction.textContent = "Erro: " + data.error;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching status", err);
+                });
+        }
+
+        // Poll every 2 seconds
+        setInterval(updateProgress, 2000);
+        setInterval(updateTimer, 500);
+        updateProgress();
+    </script>
+</body>
+</html>

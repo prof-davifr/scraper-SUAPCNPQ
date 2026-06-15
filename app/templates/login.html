@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUAP Export Automator</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --primary-hover: #333333;
+            --bg-color: #ffffff;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --border-color: #000000;
+            --input-bg: #ffffff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+            animation: fade-in 0.8s ease-out;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            text-align: left;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 0;
+            background: var(--input-bg);
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'EB Garamond', serif;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-bottom-width: 2px;
+        }
+
+        .row {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            font-family: 'EB Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background: white;
+            color: black;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 0.5rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            font-family: 'EB Garamond', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Coletor-SUAP</h1>
+                <p>Identifique-se com suas credenciais do SUAP para começar.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div style="background-color: #fff0f0; border-left: 4px solid #ff4444; padding: 1rem; margin-bottom: 1.5rem; font-style: italic; font-size: 0.95rem;">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            
+            <form action="/" method="POST">
+                <div class="form-group">
+                    <label for="username">Usuário SUAP</label>
+                    <input type="text" id="username" name="username" required placeholder="Matrícula do usuário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn">Próximo</button>
+            </form>
+            
+            <form action="/process-raw" method="POST" style="margin-top: 1rem;">
+                <button type="submit" class="btn" style="background: #666; border-color: #666;">Processar Dados Brutos</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function setYears(count) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const startInput = document.getElementById('year_start');
+            const endInput = document.getElementById('year_end');
+            
+            endInput.value = currentYear;
+            if (count === 0) {
+                startInput.value = 2000;
+            } else {
+                startInput.value = currentYear - count + 1;
+            }
+        }
+    </script>
+</body>
+</html>
