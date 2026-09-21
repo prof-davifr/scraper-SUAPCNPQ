@@ -62,9 +62,13 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
 
 ## 📋 Backlog
 
-- [ ] **Decidir o destino das 4 alterações fora do versionamento — o `HANDOFF.md` guarda a credencial do SUAP em texto claro.**
-      `git status` acusa `.gitignore` e `core/scraper.py` modificados,
-      `HANDOFF.md` e `scripts/coletar-suap.py` novos:
+- [x] **Decidir o destino das 4 alterações fora do versionamento — o `HANDOFF.md` guarda a credencial do SUAP em texto claro.**
+      Resolvido em 20/09/2026. O `.gitignore`, o `core/scraper.py` e o
+      `scripts/coletar-suap.py` foram commitados. O `HANDOFF.md` continua na
+      máquina, agora sem a senha no texto e listado no `.gitignore`. A
+      verificação confirmou que a credencial nunca entrou no histórico, nem
+      aqui nem no remoto público. **Falta trocar a senha do SUAP**: ela ficou
+      meses em arquivo de texto sem proteção. Registro original:
       - `.gitignore` — passa a ignorar o `.env`. Commitar.
       - `core/scraper.py` — o `TABLE_TIMEOUT` descrito acima. Commitar.
       - `scripts/coletar-suap.py` — modo CLI headless: lê usuário e senha do
