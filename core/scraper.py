@@ -9,6 +9,12 @@ from core.processor import merge_production_data
 # We use a 120-minute timeout for report generation/download, since it can take up to 2 hours.
 LONG_TIMEOUT = 120 * 60 * 1000  
 
+# Um campus sem producao no periodo nunca renderiza a tabela de resultados.
+# Com LONG_TIMEOUT esse campus trava a coleta inteira por 2 horas, tres vezes.
+# Os campi com dados respondem em cerca de um minuto, entao 10 minutos ja e
+# uma margem larga. Ajustavel por SUAP_TABLE_TIMEOUT_MIN.
+TABLE_TIMEOUT = int(os.environ.get('SUAP_TABLE_TIMEOUT_MIN', '10')) * 60 * 1000
+
 def setup_dirs():
     raw_path = Path("data/raw")
     processed_path = Path("data/processed")
@@ -193,7 +199,16 @@ def login_and_scrape(username, password, year_start, year_end, campus_filter=Non
                     
                     # This can take minutes
                     # We wait for the results table or some indicator
-                    page.wait_for_selector("table", timeout=LONG_TIMEOUT)
+                    try:
+                        page.wait_for_selector("table", timeout=TABLE_TIMEOUT)
+                    except PlaywrightTimeoutError:
+                        minutos = TABLE_TIMEOUT // 60000
+                        log_msg(f"{campus_sigla}: sem tabela de resultados em {minutos} min. "
+                                f"Campus sem producao no periodo. Pulando.")
+                        set_state("Sem producao", campus_sigla)
+                        # Nao e falha transitoria: repetir daria o mesmo resultado.
+                        success = True
+                        break
                     
                     # Now download XLS
                     set_state("Aguardando geração do XLS", campus_sigla)

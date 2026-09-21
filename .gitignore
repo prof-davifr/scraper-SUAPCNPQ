@@ -10,3 +10,9 @@ env/
 *.bak
 .DS_Store
 Thumbs.db
+
+# Credenciais — nunca versionar
+.env
+
+# Anotações de trabalho, com caminhos e estado da máquina local
+HANDOFF.md
