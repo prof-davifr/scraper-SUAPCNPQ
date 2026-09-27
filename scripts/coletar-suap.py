@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def load_env(path):
     if not path.exists():
-        print(f"ERRO: {path} não encontrado. Crie com SUAP_USER/SUAP_PASS.", file=sys.stderr)
+        print(f"ERRO: {path} não encontrado. Crie com SUAP_USER (e SUAP_PASS, ou a senha no cofre).", file=sys.stderr)
         sys.exit(1)
     for line in path.read_text().splitlines():
         line = line.strip()
@@ -23,10 +23,24 @@ def load_env(path):
             os.environ.setdefault(k.strip(), v.strip())
 
 load_env(ROOT / '.env')
+
+
+def senha_do_cofre(usuario):
+    """Senha do SUAP no cofre do sistema (servico 'suap'), se houver."""
+    if not usuario:
+        return None
+    try:
+        import keyring
+        return keyring.get_password('suap', usuario)
+    except Exception:
+        return None
+
+
 USER = os.environ.get('SUAP_USER')
-PASS = os.environ.get('SUAP_PASS')
+PASS = os.environ.get('SUAP_PASS') or senha_do_cofre(USER)
 if not USER or not PASS:
-    print("ERRO: SUAP_USER/SUAP_PASS ausentes no .env", file=sys.stderr)
+    print("ERRO: SUAP_USER ausente no .env, ou senha ausente (SUAP_PASS no .env ou "
+          "'keyring set suap <matricula>')", file=sys.stderr)
     sys.exit(1)
 
 YEAR_START = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else int(os.environ.get('SUAP_YEAR_START', '2024'))
