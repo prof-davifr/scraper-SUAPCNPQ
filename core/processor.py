@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from utils.logger import log_msg
+from core.siglas import codigo_dashboard
 
 def read_excel_sheets(filepath):
     """
@@ -69,7 +70,13 @@ def merge_production_data(new_file_path, campus_sigla, downloads_dir):
     """
     Lê o novo arquivo baixado (todas as abas), carrega o arquivo mestre existente,
     combina aba por aba, remove duplicatas e salva o resultado com múltiplas abas.
+    O mestre leva o código do dashboard, não a sigla do SUAP (ver core/siglas.py).
     """
+    sigla_suap = campus_sigla
+    campus_sigla = codigo_dashboard(sigla_suap)
+    if campus_sigla != sigla_suap:
+        log_msg(f"Sigla {sigla_suap} do SUAP corresponde a {campus_sigla} no dashboard: "
+                f"mesclando em {campus_sigla}.xlsx.")
     master_filename = f"{campus_sigla}.xlsx"
     master_path = os.path.join(downloads_dir, master_filename)
     

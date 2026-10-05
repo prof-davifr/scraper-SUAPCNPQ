@@ -8,9 +8,9 @@ on:
 
 jobs:
   importa:
-    # Não há suíte de testes. O que este job pega é quebra de dependência e de
-    # assinatura — como o xlrd pela metade que já zerou uma exportação no
-    # scraper-SUAPPos. Mudança de HTML do SUAP, só a coleta real pega.
+    # O que este job pega é quebra de dependência e de assinatura — como o xlrd
+    # pela metade que já zerou uma exportação no scraper-SUAPPos — e os testes
+    # de tests/, que não usam rede. Mudança de HTML do SUAP, só a coleta real pega.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -35,3 +35,8 @@ jobs:
 
       - name: Importar o coletor (depende do playwright)
         run: python -c "import core.scraper; print('core.scraper OK')"
+
+      - name: Testes (sem rede)
+        run: |
+          pip install pytest
+          python -m pytest -q

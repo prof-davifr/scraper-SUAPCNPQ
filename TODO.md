@@ -82,14 +82,24 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
         que é público. Os passos que ele lista já foram concluídos em 21/08.
         Apagar ou mover para fora da árvore do repositório, e trocar a senha —
         ela circulou em arquivo de texto sem proteção.
-- [ ] **`--sincronizar` copia siglas obsoletas e derruba o build do dashboard.**
+- [x] **`--sincronizar` copia siglas obsoletas e derruba o build do dashboard.**
+      Resolvido em 04/10/2026. O `--sincronizar` passa os mestres por
+      `separar_para_sincronizar` (`core/siglas.py`): copia só os códigos de
+      `CODIGOS_VALIDOS` e lista, com aviso, os que ficaram de fora — hoje
+      `FSA`, `PAF` e `VDC` (27 de 30 mestres seguem para o dashboard). Registro
+      original:
       `data/processed/` tem 30 mestres, entre eles `FSA`, `PAF` e `VDC` — siglas
       antigas de Feira de Santana, Paulo Afonso e Vitória da Conquista, cujo
       conteúdo já foi mesclado em `FS`, `PA` e `VC`. Nenhuma das três está em
       `CODIGOS_VALIDOS` (`dashboard-prpgi/scripts/validate-data.js`), então
       `npm run build` aborta. Foi por isso que a sincronização de 21/08 saiu à
       mão. Falta o script filtrar as siglas válidas antes de copiar.
-- [ ] **Não existe, em código, o mapa sigla do SUAP → código do dashboard.**
+- [x] **Não existe, em código, o mapa sigla do SUAP → código do dashboard.**
+      Resolvido em 04/10/2026. `core/siglas.py` guarda `SUAP_PARA_DASHBOARD`
+      (FSA→FS, PAF→PA, VDC→VC) e a cópia de `CODIGOS_VALIDOS`;
+      `merge_production_data` grava o mestre já com o código do dashboard e
+      registra `AVISO` no log para sigla fora dos dois. Testes em
+      `tests/test_siglas.py`, rodados também no CI. Registro original:
       Quando o SUAP renomeou FS→FSA, PA→PAF e VC→VDC, o coletor abriu mestres
       novos, sem histórico, e o conserto (rodar `merge_production_data` dos
       arquivos antigos sobre os mestres) foi manual — o primeiro build do

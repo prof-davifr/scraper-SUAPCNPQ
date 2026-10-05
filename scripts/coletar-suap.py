@@ -6,6 +6,7 @@ Uso:
 
 Lê credenciais do .env (SUAP_USER, SUAP_PASS).
 --sincronizar: após coletar, copia os master files para dashboard-prpgi/dados/
+               (só os de sigla que o dashboard aceita — ver core/siglas.py)
 """
 import os, sys, shutil
 from pathlib import Path
@@ -56,6 +57,7 @@ if '--campus' in sys.argv:
 
 sys.path.insert(0, str(ROOT))
 from core.scraper import login_and_scrape, fetch_campus_list, setup_dirs
+from core.siglas import separar_para_sincronizar
 
 def callback(status, campus=None):
     print(f"[{campus or '----'}] {status}", flush=True)
@@ -83,11 +85,13 @@ if SINCRONIZAR:
     _, processed = setup_dirs()
     dest = ROOT.parent / 'dashboard-prpgi' / 'dados' / 'scraper-SUAPCNPQ'
     dest.mkdir(parents=True, exist_ok=True)
-    n = 0
-    for f in Path(processed).glob('*.xlsx'):
+    # Sigla antiga (FSA, PAF, VDC) ou desconhecida derruba o npm run build.
+    copiar, ignorados = separar_para_sincronizar(sorted(Path(processed).glob('*.xlsx')))
+    for f in copiar:
         shutil.copy2(f, dest / f.name)
-        n += 1
-    print(f"\nSincronizado: {n} master files copiados para {dest}", flush=True)
+    print(f"\nSincronizado: {len(copiar)} master files copiados para {dest}", flush=True)
+    for f, motivo in ignorados:
+        print(f"  AVISO: {f.name} não copiado — {motivo}.", flush=True)
     print("Agora rode: cd dashboard-prpgi && npm run build", flush=True)
 
 print("\nColeta concluída.", flush=True)
