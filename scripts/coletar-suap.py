@@ -57,7 +57,7 @@ if '--campus' in sys.argv:
 
 sys.path.insert(0, str(ROOT))
 from core.scraper import login_and_scrape, fetch_campus_list, setup_dirs
-from core.siglas import separar_para_sincronizar
+from core.siglas import separar_para_sincronizar, siglas_fora_do_dashboard
 
 def callback(status, campus=None):
     print(f"[{campus or '----'}] {status}", flush=True)
@@ -70,6 +70,19 @@ try:
 except Exception as e:
     print(f"FALHA NO LOGIN: {e}", file=sys.stderr)
     sys.exit(1)
+
+
+def avisar_siglas_desconhecidas():
+    # Campus novo no SUAP derruba o npm run build do dashboard; avisar daqui.
+    desconhecidas = siglas_fora_do_dashboard(campi)
+    if desconhecidas:
+        print(f"AVISO: o SUAP lista {len(desconhecidas)} campus(i) que o dashboard não conhece: "
+              f"{', '.join(desconhecidas)}. Cadastre em CAMPUS_TO_CITY (dashboard-prpgi) e em "
+              f"CODIGOS_DASHBOARD (core/siglas.py), ou acrescente ao SUAP_PARA_DASHBOARD se for "
+              f"renomeação. Até lá o --sincronizar não copia esses mestres.", flush=True)
+
+
+avisar_siglas_desconhecidas()
 
 # 2. coleta — por ano (período de 1 ano por vez, mais robusto)
 if ANOS:
@@ -94,4 +107,5 @@ if SINCRONIZAR:
         print(f"  AVISO: {f.name} não copiado — {motivo}.", flush=True)
     print("Agora rode: cd dashboard-prpgi && npm run build", flush=True)
 
+avisar_siglas_desconhecidas()
 print("\nColeta concluída.", flush=True)

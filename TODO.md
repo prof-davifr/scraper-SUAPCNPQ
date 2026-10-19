@@ -131,7 +131,15 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       a sessão do Flask é assinada, não criptografada: quem tiver o cookie lê a senha. Guardar
       apenas um identificador do lado do servidor, ou entregar a credencial direto
       ao worker de segundo plano.
-- [ ] **Campus novo ainda derruba o build sem aviso prévio.** Itabuna (ITA) foi
+- [x] **Campus novo ainda derruba o build sem aviso prévio.**
+      Resolvido em 18/10/2026. `siglas_fora_do_dashboard` (`core/siglas.py`)
+      compara a lista de campi do SUAP com `CODIGOS_DASHBOARD` e o mapa; o
+      `scripts/coletar-suap.py` mostra o aviso logo depois do login e repete no
+      fim da coleta. Somado ao `AVISO` do `merge_production_data` e ao filtro do
+      `--sincronizar`, campus novo não chega mais ao `npm run build`. A cópia de
+      `CODIGOS_VALIDOS` bate com `CAMPUS_TO_CITY` do dashboard (conferido em
+      18/10/2026, 26 códigos + IFBA, REI e PO). Teste em `tests/test_siglas.py`.
+      Registro original: Itabuna (ITA) foi
       mapeado no dashboard em ago/2026, mas o SUAP já lista 29 campi e há outros
       em construção (Cajazeiras, Macaúbas, Poções). O coletor deveria terminar
       listando as siglas que o dashboard não conhece; hoje isso só aparece quando

@@ -67,3 +67,18 @@ def separar_para_sincronizar(mestres):
             ignorados.append((mestre, "sigla desconhecida pelo dashboard; "
                                       "derrubaria o npm run build"))
     return copiar, ignorados
+
+
+def siglas_fora_do_dashboard(campi):
+    """
+    Siglas da lista de campi do SUAP (dicts de `fetch_campus_list`, com a chave
+    'sigla') que não têm código no dashboard, nem direto nem pelo mapa.
+    Campus novo no SUAP aparece aqui antes de chegar ao `npm run build`.
+    """
+    desconhecidas = []
+    for campus in campi:
+        sigla = str(campus.get("sigla", "")).strip()
+        if (sigla and sigla not in CODIGOS_DASHBOARD
+                and sigla not in SUAP_PARA_DASHBOARD and sigla not in desconhecidas):
+            desconhecidas.append(sigla)
+    return desconhecidas

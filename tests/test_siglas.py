@@ -9,7 +9,8 @@ import pytest
 import core.processor as processor
 import core.siglas as siglas
 from core.siglas import (CODIGOS_DASHBOARD, SUAP_PARA_DASHBOARD,
-                         codigo_dashboard, separar_para_sincronizar)
+                         codigo_dashboard, separar_para_sincronizar,
+                         siglas_fora_do_dashboard)
 
 
 @pytest.fixture
@@ -52,6 +53,15 @@ def test_sincronizar_deixa_de_fora_siglas_antigas_e_desconhecidas(tmp_path):
     assert set(motivos) == {"FSA", "PAF", "VDC", "CAJ"}
     assert "FS.xlsx" in motivos["FSA"]
     assert "desconhecida" in motivos["CAJ"]
+
+
+def test_lista_de_campi_aponta_campus_novo_antes_do_build():
+    campi = [{"value": "1", "sigla": "SSA"}, {"value": "2", "sigla": "FSA"},
+             {"value": "3", "sigla": "ITA"}, {"value": "4", "sigla": "CAJ"},
+             {"value": "5", "sigla": " MAC "}, {"value": "6", "sigla": "CAJ"},
+             {"value": "7", "sigla": ""}]
+    assert siglas_fora_do_dashboard(campi) == ["CAJ", "MAC"]
+    assert siglas_fora_do_dashboard([]) == []
 
 
 def test_merge_grava_sigla_renomeada_no_mestre_antigo(tmp_path, avisos):
