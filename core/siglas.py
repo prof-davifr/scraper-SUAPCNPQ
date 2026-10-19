@@ -1,7 +1,7 @@
 """
 Siglas de campus: a que o SUAP exibe e o código que o dashboard-prpgi aceita.
 
-O SUAP renomeou FS, PA e VC para FSA, PAF e VDC. O dashboard continua com os
+O SUAP renomeou FS, PA, VC e PS para FSA, PAF, VDC e PSG. O dashboard continua com os
 códigos antigos. Gravar o mestre com a sigla nova abre um arquivo sem histórico
 e derruba o `npm run build` do dashboard, porque o validate-data.js recusa
 código desconhecido. Este é o único lugar do coletor que conhece essa
@@ -17,6 +17,9 @@ SUAP_PARA_DASHBOARD = {
     "FSA": "FS",  # Feira de Santana
     "PAF": "PA",  # Paulo Afonso
     "VDC": "VC",  # Vitória da Conquista
+    # Porto Seguro. Visto em 19/10/2026: PS sumiu da lista do SUAP, PSG
+    # apareceu, e os 42 servidores de PSG em 2025 estão todos em PS.xlsx.
+    "PSG": "PS",
 }
 
 # Cópia de CODIGOS_VALIDOS em dashboard-prpgi/scripts/validate-data.js: as

@@ -106,7 +106,14 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       dashboard chegou a perder 1094 registros técnicos. Se o SUAP renomear de
       novo, a perda é silenciosa. Guardar o mapa em um lugar só e avisar quando
       aparecer sigla desconhecida.
-- [ ] **A coleta continua manual e local — falta decidir cadência e onde roda.**
+- [x] **A coleta continua manual e local — falta decidir cadência e onde roda.**
+      Resolvido em 19/10/2026: roda nesta máquina, todo mês, pelo
+      `dashboard-prpgi/scripts/atualizar-suap.sh` (timer `coleta-suap`), com
+      `--anos <ano anterior> <ano corrente> --sincronizar`. Ver
+      `docs/proveniencia-dados.md` §2.1.1 do dashboard. O script roda
+      `playwright install --only-shell chromium` antes, porque a primeira rodada
+      falhou no login: o `.venv` pedia a build 1208 do navegador, ausente do
+      cache. Registro original:
       Depende da credencial do SUAP e de rede que resolva `suap.ifba.edu.br` (a
       rodada de 08/08 perdeu campi com `ERR_NAME_NOT_RESOLVED`). O runner público
       do GitHub não alcança o SUAP: automatizar exige runner auto-hospedado na

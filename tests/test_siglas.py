@@ -23,14 +23,14 @@ def avisos(monkeypatch):
 
 
 def test_mapa_aponta_para_codigos_do_dashboard():
-    assert SUAP_PARA_DASHBOARD == {"FSA": "FS", "PAF": "PA", "VDC": "VC"}
+    assert SUAP_PARA_DASHBOARD == {"FSA": "FS", "PAF": "PA", "VDC": "VC", "PSG": "PS"}
     assert set(SUAP_PARA_DASHBOARD.values()) <= CODIGOS_DASHBOARD
     # Sigla antiga não pode ser, ao mesmo tempo, código aceito pelo dashboard.
     assert not set(SUAP_PARA_DASHBOARD) & CODIGOS_DASHBOARD
 
 
 @pytest.mark.parametrize("suap, dashboard", [
-    ("FSA", "FS"), ("PAF", "PA"), ("VDC", "VC"),
+    ("FSA", "FS"), ("PAF", "PA"), ("VDC", "VC"), ("PSG", "PS"),
     ("FS", "FS"), ("SSA", "SSA"), ("ITA", "ITA"), ("IFBA", "IFBA"),
 ])
 def test_codigo_dashboard_sem_aviso(avisos, suap, dashboard):

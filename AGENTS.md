@@ -22,7 +22,7 @@ Planilhas Excel por campus com abas:
 
 BAR, BRU, CAM, CFO, EC, EUN, FS, ILH, IRE, ITA, JAC, JAG, JEQ, JUA, LF, PA, PIS, PS, SAJ, SAM, SEA, SF, SSA, UBA, VAL, VC + REI (e IFBA, PO, códigos legados de planilhas vazias)
 
-O SUAP exibe FS, PA e VC como FSA, PAF e VDC. `core/siglas.py` guarda o mapa
+O SUAP exibe FS, PA, VC e PS como FSA, PAF, VDC e PSG. `core/siglas.py` guarda o mapa
 (`SUAP_PARA_DASHBOARD`) e a cópia de `CODIGOS_VALIDOS` do dashboard
 (`CODIGOS_DASHBOARD`); campus novo precisa entrar lá e em `CAMPUS_TO_CITY` do
 `dashboard-prpgi`.

@@ -58,7 +58,7 @@ O projeto utiliza uma arquitetura organizada e modular:
   - `scraper.py`: Motor Playwright para extração de dados.
   - `processor.py`: Utilitário de mesclagem e deduplicação de Excel.
   - `background.py`: Orquestrador de tarefas assíncronas.
-  - `siglas.py`: Mapa sigla do SUAP → código do dashboard (FSA→FS, PAF→PA, VDC→VC) e lista de códigos aceitos.
+  - `siglas.py`: Mapa sigla do SUAP → código do dashboard (FSA→FS, PAF→PA, VDC→VC, PSG→PS) e lista de códigos aceitos.
 - `scripts/coletar-suap.py`: Modo CLI, sem interface, para coletas completas.
 - `tests/`: Testes sem rede (`python -m pytest -q`), rodados também no CI.
 - `utils/`: Ferramentas de suporte (Logger).
