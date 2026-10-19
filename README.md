@@ -25,8 +25,8 @@ O **Coletor-SUAP** é uma ferramenta de automação robusta desenvolvida para fa
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/seu-usuario/coletor-suap.git
-cd coletor-suap
+git clone https://github.com/prof-davifr/scraper-SUAPCNPQ.git
+cd scraper-SUAPCNPQ
 ```
 
 ### 2. Inicialização Automática
@@ -35,6 +35,18 @@ O sistema conta com um script que configura o ambiente virtual e instala as depe
 chmod +x scripts/start.sh
 ./scripts/start.sh
 ```
+
+### 3. Credencial (modo CLI)
+O modo CLI lê a credencial de um arquivo `.env` na raiz, que nunca é versionado
+(está no `.gitignore`):
+```bash
+SUAP_USER=<matrícula>
+SUAP_PASS=<senha>          # opcional se a senha estiver no cofre do sistema
+SUAP_YEAR_START=2024       # opcional; padrão do período
+SUAP_YEAR_END=2026
+```
+Sem `SUAP_PASS`, a senha é buscada no cofre do sistema (serviço `suap`):
+`keyring set suap <matrícula>`.
 
 ## Estrutura do Projeto
 
@@ -46,6 +58,9 @@ O projeto utiliza uma arquitetura organizada e modular:
   - `scraper.py`: Motor Playwright para extração de dados.
   - `processor.py`: Utilitário de mesclagem e deduplicação de Excel.
   - `background.py`: Orquestrador de tarefas assíncronas.
+  - `siglas.py`: Mapa sigla do SUAP → código do dashboard (FSA→FS, PAF→PA, VDC→VC) e lista de códigos aceitos.
+- `scripts/coletar-suap.py`: Modo CLI, sem interface, para coletas completas.
+- `tests/`: Testes sem rede (`python -m pytest -q`), rodados também no CI.
 - `utils/`: Ferramentas de suporte (Logger).
 - `data/`: Armazenamento de resultados.
   - `raw/`: Planilhas originais baixadas do SUAP.
@@ -61,6 +76,34 @@ O projeto utiliza uma arquitetura organizada e modular:
    - Digite a sigla de um campus para filtrar ou deixe vazio para coletar todos.
    - Use os botões de atalho (ex: "Últimos 3 Anos") ou defina o intervalo manualmente.
 5. **Passo 3 (Progresso)**: Acompanhe a coleta. Os arquivos finais estarão em `data/processed/`.
+
+A senha digitada fica só na memória do servidor; o cookie de sessão leva apenas
+uma chave aleatória.
+
+### Modo CLI
+```bash
+source .venv/bin/activate
+python scripts/coletar-suap.py 2024 2026                  # período único, todos os campi
+python scripts/coletar-suap.py --anos 2025 2026           # ano a ano (mais robusto)
+python scripts/coletar-suap.py --anos 2026 --campus SSA   # um campus
+python scripts/coletar-suap.py --anos 2026 --sincronizar  # coleta e copia para o dashboard
+```
+O script valida o login, avisa quando o SUAP lista campus que o dashboard não
+conhece e, com `--sincronizar`, copia para `../dashboard-prpgi/dados/scraper-SUAPCNPQ/`
+apenas os mestres de código aceito pelo dashboard (as siglas antigas FSA, PAF e
+VDC e as desconhecidas ficam de fora, com aviso). Depois, rode `npm run build`
+no `dashboard-prpgi`.
+
+### Ajustes
+- `SUAP_TABLE_TIMEOUT_MIN` (padrão `10`): minutos de espera pela tabela do
+  relatório. Campus sem produção no período nunca exibe a tabela; passado esse
+  limite, ele é registrado como "sem produção" e a coleta segue.
+
+### Abas e consumo
+Cada mestre tem as abas Produções Bibliográficas, Produções Técnicas, Registros e
+Patentes, Orientações Concluídas e Orientações em Andamento. O `dashboard-prpgi`
+usa as de produção e orientações; Registros e Patentes continua sendo baixada,
+mas a aba de Inovação do dashboard vem do INPI desde ago/2026.
 
 ## Isenção de Responsabilidade
 

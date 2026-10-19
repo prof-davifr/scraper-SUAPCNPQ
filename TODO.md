@@ -144,7 +144,14 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       em construção (Cajazeiras, Macaúbas, Poções). O coletor deveria terminar
       listando as siglas que o dashboard não conhece; hoje isso só aparece quando
       `npm run build` aborta, do outro lado da cerca.
-- [ ] **`AGENTS.md` e `README.md` desatualizados.** O `AGENTS.md` anuncia
+- [x] **`AGENTS.md` e `README.md` desatualizados.**
+      Resolvido em 18/10/2026. O `AGENTS.md` marca "Registros e Patentes" como
+      baixada mas não consumida, traz ITA na lista de campi, o mapa de siglas e a
+      seção "Execução" (CLI, web, `SUAP_TABLE_TIMEOUT_MIN`, testes). O
+      `README.md` ganhou a URL real do clone, o `.env` e o cofre do sistema, o
+      modo CLI com `--anos`/`--campus`/`--sincronizar`, o
+      `SUAP_TABLE_TIMEOUT_MIN` e as abas que o dashboard consome. Registro
+      original: o `AGENTS.md` anuncia
       "Registros e Patentes" como entregável, mas o dashboard passou a tirar
       Inovação do INPI e ignora essa aba. O `README.md` documenta só a interface
       web: não menciona o `.env`, o modo CLI, o `SUAP_TABLE_TIMEOUT_MIN` nem a
