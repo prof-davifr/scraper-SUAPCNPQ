@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from core.background import run_automation_in_background, run_processing_in_background, get_current_state
 from core.scraper import fetch_campus_list
 import os
+import secrets
 import logging
 
 app = Flask(__name__, 
@@ -10,6 +11,25 @@ app = Flask(__name__,
 
 # Secret key for sessions
 app.secret_key = os.urandom(24)
+
+# A sessão do Flask é um cookie assinado, não criptografado: quem tem o cookie
+# lê o conteúdo. Por isso a senha do SUAP fica só na memória deste processo e o
+# cookie leva apenas uma chave aleatória. Some quando o servidor reinicia, como
+# a própria sessão (a secret_key também é nova a cada início).
+_credenciais = {}
+
+
+def guardar_credencial(username, password):
+    """Guarda (usuário, senha) na memória e devolve a chave que vai no cookie."""
+    chave = secrets.token_urlsafe(32)
+    _credenciais[chave] = (username, password)
+    return chave
+
+
+def credencial_da_sessao():
+    """(usuário, senha) da sessão atual, ou None se não houver login válido."""
+    chave = session.get("credencial")
+    return _credenciais.get(chave) if chave else None
 
 # Disable Flask/Werkzeug access logs
 log = logging.getLogger('werkzeug')
@@ -29,8 +49,10 @@ def index():
         try:
             # Discovery phase: get campuses
             campuses = fetch_campus_list(username, password)
+            _credenciais.pop(session.get("credencial"), None)
+            session.clear()
             session["username"] = username
-            session["password"] = password
+            session["credencial"] = guardar_credencial(username, password)
             session["campuses"] = campuses
             return redirect(url_for("setup"))
         except Exception as e:
@@ -41,7 +63,8 @@ def index():
 
 @app.route("/setup", methods=["GET", "POST"])
 def setup():
-    if "username" not in session:
+    credencial = credencial_da_sessao()
+    if credencial is None:
         return redirect(url_for("index"))
 
     state = get_current_state()
@@ -53,8 +76,7 @@ def setup():
         year_end = request.form.get("year_end")
         campus_filter = request.form.getlist("campus_filter") # Returns a list of values
         
-        username = session.get("username")
-        password = session.get("password")
+        username, password = credencial
         
         # Start background job
         run_automation_in_background(username, password, year_start, year_end, campus_filter)

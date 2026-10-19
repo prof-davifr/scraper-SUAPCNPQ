@@ -121,8 +121,14 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       exportação no `scraper-SUAPPos`) e rodar `merge_production_data` sobre um
       fixture pequeno e sem dado pessoal. Mudança de HTML do SUAP, essa só um
       runner dentro da rede institucional pegaria.
-- [ ] **A senha do SUAP é guardada na sessão do Flask (`main.py`).** A sessão do
-      Flask é assinada, não criptografada: quem tiver o cookie lê a senha. Guardar
+- [x] **A senha do SUAP é guardada na sessão do Flask (`main.py`).**
+      Resolvido em 18/10/2026. A senha fica só na memória do processo
+      (`_credenciais` em `main.py`) e o cookie leva apenas uma chave aleatória
+      (`secrets.token_urlsafe`); novo login descarta a chave anterior e, com o
+      servidor reiniciado, a chave antiga deixa de abrir o `/setup`.
+      `tests/test_main.py` decodifica o cookie e confere que a senha não está
+      lá, com credencial inventada e dublês no lugar do SUAP. Registro original:
+      a sessão do Flask é assinada, não criptografada: quem tiver o cookie lê a senha. Guardar
       apenas um identificador do lado do servidor, ou entregar a credencial direto
       ao worker de segundo plano.
 - [ ] **Campus novo ainda derruba o build sem aviso prévio.** Itabuna (ITA) foi
