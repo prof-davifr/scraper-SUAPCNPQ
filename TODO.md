@@ -3,8 +3,8 @@
 Coletor da produção declarada no Lattes, via SUAP/IFBA
 (`cnpq/producao_por_campus_detalhado/`) — motor Playwright (`core/scraper.py`),
 mesclagem incremental por campus (`core/processor.py`), interface Flask em três
-etapas (`main.py` + `app/templates/`) e um modo CLI ainda fora do versionamento
-(`scripts/coletar-suap.py`).
+etapas (`main.py` + `app/templates/`) e um modo CLI (`scripts/coletar-suap.py`),
+versionado desde 20/09/2026.
 
 Alimenta as abas **Produção Científica**, **Produção Técnica** e **Orientações**
 do `dashboard-prpgi`, através de `dados/scraper-SUAPCNPQ/{SIGLA}.xlsx`.
@@ -17,7 +17,7 @@ SUAP (relatório por campus)  →  data/processed/{SIGLA}.xlsx  →  dashboard-p
  (credencial + rede do IFBA)      (merge incremental)          (cópia + build)
 ```
 
-Última coleta: **21/08/2026** (2024–2026, 30 siglas). Último commit: **21/07/2026**.
+Última coleta: **21/08/2026** (2024–2026, 30 siglas). Último commit: **18/10/2026**.
 A aba "Registros e Patentes" continua sendo baixada, mas o dashboard não a
 consome mais — desde ago/2026 a aba de Inovação vem do INPI.
 
@@ -115,7 +115,29 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       exigem exportação manual por campus". Enquanto não se decide, definir de
       quanto em quanto tempo rodar `scripts/coletar-suap.py` à mão: a base do
       dashboard está congelada em 21/08/2026.
-- [ ] **Sem CI e sem teste automatizado.** `.github/workflows/` não existe e não
+      **Análise (18/10/2026) — decisão do responsável.** Fatos: a base do
+      dashboard (27 mestres em `dados/scraper-SUAPCNPQ/`) continua de 21/08;
+      `suap.ifba.edu.br` resolve nesta máquina hoje (200.128.35.18), mas a
+      coleta não foi rodada (exige a credencial e horas de navegador). O modo
+      CLI já é idempotente (o merge deduplica) e, desde 18/10, avisa sobre
+      campus novo logo após o login. Recomendação: até haver runner
+      auto-hospedado, rodar à mão a cada trimestre (e antes de cada relatório
+      da PRPGI) `python scripts/coletar-suap.py --anos <ano anterior> <ano
+      corrente> --sincronizar`, seguido de `npm run build` no dashboard;
+      decidir o runner junto com o `scraper-DGP`.
+- [x] **Sem CI e sem teste automatizado.**
+      Resolvido entre 20/09 e 18/10/2026 (marcado em 18/10/2026).
+      `.github/workflows/ci.yml` (commit `72b7c79`) compila e importa os módulos
+      e roda `pytest`; `tests/test_siglas.py` (commit `dd5c26e`) já passa
+      `merge_production_data` sobre uma planilha mínima, sem dado pessoal, e
+      `tests/test_main.py` cobre a sessão do Flask — 17 testes, sem rede.
+      Observação: o `.venv` local está quebrado (foi criado noutro diretório,
+      antes da mudança do repositório; os scripts `pip` apontam para o caminho
+      antigo e o pacote `itsdangerous` está incompleto, então `import flask`
+      falha). Os
+      testes de 18/10 rodaram num venv temporário. Recriar com
+      `rm -rf .venv && ./scripts/start.sh` quando for usar a interface.
+      Registro original: `.github/workflows/` não existe e não
       há suíte. Vale um workflow enxuto: importar os módulos (pega quebra de
       dependência e de assinatura, como o `xlrd` pela metade que já zerou uma
       exportação no `scraper-SUAPPos`) e rodar `merge_production_data` sobre um
@@ -161,3 +183,15 @@ consome mais — desde ago/2026 a aba de Inovação vem do INPI.
       2026-2026). É só disco local, porque `data/` está no `.gitignore`, mas o
       reprocessamento em lote do `processor.py` varre tudo e recriaria os mestres
       com as siglas antigas. Decidir o que guardar e o que descartar.
+      **Análise (18/10/2026) — decisão do responsável.** Fatos: hoje são 158
+      arquivos, 54 MB; `*-2000-2026.xls` (25 arquivos, 39 MB, mar–mai/2026) é a
+      única cópia bruta dos anos anteriores a 2023; `2023-2023` a `2026-2026`
+      (≈9 MB, 06–08/08) e `2024-2026` (6 MB, 21/08) se sobrepõem. O risco das
+      siglas antigas caiu: desde `dd5c26e` o `merge_production_data` converte
+      FSA/PAF/VDC em FS/PA/VC, então o reprocessamento em lote mescla nos
+      mestres certos. Restam em `data/processed/` os mestres obsoletos
+      `FSA.xlsx`, `PAF.xlsx` e `VDC.xlsx`, que o `--sincronizar` já ignora.
+      Recomendação: guardar os `2000-2026` e a coleta mais recente de cada
+      período, apagar os anuais 2024–2026 já cobertos pelo `2024-2026` de
+      21/08 e tirar de `data/processed/` os três mestres obsoletos (mover para
+      um arquivo morto fora da árvore) — economia pequena; o ganho é clareza.
